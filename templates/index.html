@@ -1,0 +1,202 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Bulk Email Sender</title>
+</head>
+<body>
+    <h2>Send Bulk Emails</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <label>Your Gmail:</label><br>
+        <input type="email" name="email"><br><br>
+
+        <label>App Password:</label><br>
+        <input type="password" name="password"><br><br>
+
+        <label>Email Subject:</label><br>
+        <input type="text" name="subject"><br><br>
+
+        <label>Email Body (use {name}):</label><br>
+        <textarea name="body" rows="10" cols="50"></textarea><br><br>
+
+        <label>Upload CSV (name, email):</label><br>
+        <input type="file" name="file"><br><br>
+
+        <input type="submit" value="Send Emails">
+    </form>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bulk Email Sender</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+  <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8 fade-in">
+    <div class="flex items-center mb-6">
+      <div class="text-indigo-600">
+        <i data-lucide="mail" class="w-8 h-8"></i>
+      </div>
+      <h2 class="text-2xl font-semibold ml-3">Send Bulk Emails</h2>
+    </div>
+    <!-- Notification -->
+    <div id="notification"
+      class="hidden mb-4 px-4 py-3 rounded-lg text-white font-medium bg-green-500 text-center transition-opacity duration-500 ease-in-out">
+      Emails sent successfully!
+    </div>
+
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-5">
+      <!-- Gmail -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Your Gmail</label>
+        <div class="relative">
+          <input type="email" name="email" placeholder="example@gmail.com"
+            class="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required>
+          <i data-lucide="user" class="absolute right-3 top-2.5 w-5 h-5 text-gray-400"></i>
+        </div>
+      </div>
+
+      <!-- App Password -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">App Password</label>
+        <div class="relative">
+          <input type="password" name="password" placeholder="16-character app password"
+            class="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required>
+          <i data-lucide="lock" class="absolute right-3 top-2.5 w-5 h-5 text-gray-400"></i>
+        </div>
+      </div>
+
+      <!-- Subject -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email Subject</label>
+        <input type="text" name="subject" placeholder="Subject of the email"
+          class="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          required>
+      </div>
+
+      <!-- Body -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email Body <span class="text-xs text-gray-500">(use
+            {name} as placeholder)</span></label>
+        <textarea name="body" rows="6" placeholder="Hello {name}, here's your message..."
+          class="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          required></textarea>
+      </div>
+
+      <!-- Attachment Upload -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Attach File with mail (optional)</label>
+        <input type="file" name="attachment"
+          class="w-full text-gray-700 border px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
+
+
+      <!-- CSV Upload -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Upload CSV (name, email)</label>
+        <input type="file" name="file" accept=".csv"
+          class="w-full text-gray-700 border px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          required>
+      </div>
+
+      <!-- Submit -->
+      <div class="text-center pt-4">
+        <button type="submit"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2 rounded-lg transition-all shadow-md">
+          <i data-lucide="send" class="inline-block w-5 h-5 mr-1"></i>
+          Send Emails
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    lucide.createIcons();
+  
+    // Wait for DOM to be ready
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.querySelector("form");
+  
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+  
+        const formData = new FormData(form);
+  
+        try {
+          const response = await fetch("/", {
+            method: "POST",
+            body: formData
+          });
+  
+          const result = await response.text();
+          if (result.includes("Emails sent successfully")) {
+            showNotification("✅ Emails sent successfully!");
+  
+            // Reset form
+            form.reset();
+          } else {
+            showNotification("❌ " + result, true);
+          }
+        } catch (err) {
+          showNotification("❌ Error sending emails", true);
+        }
+      });
+  
+      function showNotification(message, isError = false) {
+        const notif = document.getElementById("notification");
+        notif.className = "mb-4 px-4 py-3 rounded-lg font-medium text-center transition-opacity duration-500 ease-in-out";
+        notif.textContent = message;
+  
+        if (isError) {
+          notif.classList.add("bg-red-500", "text-white");
+        } else {
+          notif.classList.add("bg-green-500", "text-white");
+        }
+  
+        notif.classList.remove("hidden", "opacity-0");
+  
+        // Hide after 4s
+        setTimeout(() => {
+          notif.classList.add("opacity-0");
+          setTimeout(() => notif.classList.add("hidden"), 500);
+        }, 4000);
+      }
+    });
+  </script>  
+</body>
+
+</html>
